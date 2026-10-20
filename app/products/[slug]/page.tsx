@@ -1,7 +1,6 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
@@ -12,10 +11,15 @@ import {
 } from "lucide-react";
 import { AddToBasket } from "@/components/add-to-basket";
 import { ProductCard } from "@/components/product-card";
-import { getProduct, products } from "@/lib/products";
+import { products as sampleProducts } from "@/lib/products";
+import { ProductImage } from "@/components/product-image";
+import { getPublicProducts } from "@/lib/public-products";
+
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
 export function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
+  return sampleProducts.map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({
@@ -24,7 +28,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const products = await getPublicProducts();
+  const product = products.find((item) => item.slug === slug);
 
   return {
     title: product?.name ?? "Product not found",
@@ -38,7 +43,8 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const products = await getPublicProducts();
+  const product = products.find((item) => item.slug === slug);
 
   if (!product) notFound();
 
@@ -54,8 +60,14 @@ export default async function ProductDetailPage({
     ["Inner diameter / bore", product.bore],
     ["Number of blades", product.blades],
     ["Application", product.application],
-    ["Price & lead time", "Quotation required"],
-    ["Minimum order quantity", "To be confirmed"],
+    ["Compatible motor frames", product.compatibleFrames ?? "To be confirmed"],
+    [
+      "Price",
+      product.price
+        ? Number(product.price).toLocaleString("en-IN", { style: "currency", currency: "INR" })
+        : "Quotation required",
+    ],
+    ["Minimum order quantity", product.minimumOrderQty?.toLocaleString() ?? "To be confirmed"],
   ];
 
   return (
@@ -72,20 +84,14 @@ export default async function ProductDetailPage({
         <div className="detail-art">
           <span className="sample-label">Product preview</span>
 
-          {product.image ? (
-            <Image
-              src={product.image}
-              alt={product.name}
-              width={800}
-              height={800}
-              priority
-              className="h-full w-full rounded-xl bg-white object-contain p-6"
-            />
-          ) : (
-            <div className="flex min-h-80 items-center justify-center">
-              Product image coming soon
-            </div>
-          )}
+          <ProductImage
+            src={product.image}
+            alt={product.name}
+            width={800}
+            height={800}
+            className="h-full w-full rounded-xl bg-white object-contain p-6"
+            fallbackClassName="flex min-h-80 items-center justify-center text-sm text-slate-500"
+          />
 
           <span className="detail-art-caption">
             PRODUCT PREVIEW / VERIFY SPECIFICATIONS

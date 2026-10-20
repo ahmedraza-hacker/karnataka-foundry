@@ -1,8 +1,8 @@
 
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import type { Product } from "@/lib/products";
+import { ProductImage } from "@/components/product-image";
 
 export function ProductCard({
   product,
@@ -21,19 +21,13 @@ export function ProductCard({
         className="product-art"
         aria-label={`View ${product.name}`}
       >
-        {product.image ? (
-          <Image
-            src={product.image}
-            alt={product.name}
-            width={600}
-            height={600}
-            className="h-full w-full object-contain bg-white p-4"
-          />
-        ) : (
-          <div className="flex h-full min-h-64 items-center justify-center">
-            Image coming soon
-          </div>
-        )}
+        <ProductImage
+          src={product.image}
+          alt={product.name}
+          width={600}
+          height={600}
+          className="h-full w-full bg-white object-contain p-4"
+        />
 
         <span className="sample-label">Product preview</span>
         <span className="art-corner">
@@ -72,4 +66,3 @@ export function ProductCard({
     </article>
   );
 }
-

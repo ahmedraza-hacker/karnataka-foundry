@@ -1,7 +1,14 @@
 .next
 node_modules
 .env
-.env.*.local
+.env.*
 !.env.example
+.admin-reset.json
+.admin-reset.*
+admin-password.txt
+.admin-password*
+*.password.txt
+*.password.tmp
 coverage
 *.log
+tsconfig.tsbuildinfo

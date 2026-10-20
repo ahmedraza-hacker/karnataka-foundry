@@ -2,7 +2,9 @@ import Link from "next/link";
 import { ArrowDown, ArrowRight, ArrowUpRight, BadgeCheck, Boxes, Cog, Factory, MoveUpRight, ScanLine } from "lucide-react";
 import { FanIllustration } from "@/components/fan-illustration";
 import { ProductCard } from "@/components/product-card";
-import { products } from "@/lib/products";
+import { getPublicProducts } from "@/lib/public-products";
+
+export const dynamic = "force-dynamic";
 
 const capabilities = [
   { icon: <Cog />, title: "Engineering-led", text: "Discuss the fit, function, and technical requirements of your application with our team." },
@@ -11,7 +13,8 @@ const capabilities = [
   { icon: <ScanLine />, title: "Custom enquiries", text: "Drawings and application details help us understand your non-standard requirements." },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const products = await getPublicProducts();
   return <>
     <section className="hero">
       <div className="hero-grid" aria-hidden="true" />
@@ -39,10 +42,10 @@ export default function HomePage() {
     <section className="section section-featured" id="featured">
       <div className="section-heading">
         <div><span className="eyebrow">01 / PRODUCT RANGE</span><h2>Airflow solutions<br /><em>for industry.</em></h2></div>
-        <div className="heading-aside"><p>Explore illustrative categories for AC motor cooling and related fan components. Technical details are confirmed against each project enquiry.</p><Link className="text-link" href="/products">View all products <ArrowUpRight size={17} /></Link></div>
+        <div className="heading-aside"><p>Explore AC motor cooling and related fan components. Technical details are confirmed against each project enquiry.</p><Link className="text-link" href="/products">View all products <ArrowUpRight size={17} /></Link></div>
       </div>
       <div className="product-grid">{products.slice(0, 3).map((product, index) => <ProductCard key={product.slug} product={product} index={index} />)}</div>
-      <div className="sample-notice"><span>NOTE / 01</span><p>Catalogue listings shown are sample placeholders and are not verified specifications or confirmed stock.</p></div>
+      <div className="sample-notice"><span>NOTE / 01</span><p>Confirm product specifications, availability, and pricing with Karnataka Foundry before ordering.</p></div>
     </section>
 
     <section className="section capability-section" id="about">

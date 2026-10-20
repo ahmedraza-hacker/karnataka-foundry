@@ -10,6 +10,10 @@ export type Product = {
   application: string;
   description: string;
   image: string;
+  compatibleFrames?: string;
+  minimumOrderQty?: number;
+  price?: string | null;
+  isSample?: boolean;
 };
 
 // All entries are illustrative placeholders, not verified Karnataka Foundry products.
