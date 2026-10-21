@@ -8,6 +8,7 @@ export default function PrivacyPage() {
     <h1>Privacy notice</h1>
     <p className="legal-lead">This draft page is not a final privacy policy. Karnataka Foundry must provide and review its legal entity details, data practices, retention periods, processors, and contact information before launch.</p>
     <h2>Enquiry information</h2><p>The quotation form is designed to save submitted business contact and requirement details in the configured PostgreSQL database. Do not submit sensitive personal, financial, or payment information through the form.</p>
+    <h2>Company registration</h2><p>Company registration may store business and contact names, business email, phone number, city, state, requested business type, and optional GSTIN. Passwords are stored as bcrypt hashes rather than plaintext. Company information is available to authorized administrators for application review and account management. Do not submit information that is not needed for business registration.</p>
     <h2>Before production</h2><p>Document the lawful basis, purposes, access controls, retention/deletion process, hosting location, data processors, individual rights process, and a monitored privacy contact. Obtain legal review appropriate to the company and jurisdictions served.</p>
   </article>;
 }

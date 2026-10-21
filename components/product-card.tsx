@@ -12,10 +12,7 @@ export function ProductCard({
   index?: number;
 }) {
   return (
-    <article
-      className="product-card"
-      style={{ animationDelay: `${index * 70}ms` }}
-    >
+    <article className="product-card">
       <Link
         href={`/products/${product.slug}`}
         className="product-art"

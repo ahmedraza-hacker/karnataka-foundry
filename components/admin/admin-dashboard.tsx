@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Boxes, CircleAlert, MessageSquareText, RefreshCw } from "lucide-react";
+import { Boxes, Building2, CircleAlert, MessageSquareText, RefreshCw } from "lucide-react";
 
 type DashboardStats = {
   total: number;
@@ -11,6 +11,7 @@ type DashboardStats = {
   quoted: number;
   closed: number;
   products: number;
+  pendingCompanies: number;
 };
 
 const cards = [
@@ -18,6 +19,7 @@ const cards = [
   { key: "new", label: "New enquiries", icon: CircleAlert },
   { key: "quoted", label: "Quotes in progress", icon: RefreshCw },
   { key: "products", label: "Products", icon: Boxes },
+  { key: "pendingCompanies", label: "Pending companies", icon: Building2 },
 ] as const;
 
 export function AdminDashboard() {
@@ -64,7 +66,7 @@ export function AdminDashboard() {
         </div>
       )}
 
-      <section aria-label="Business statistics" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section aria-label="Business statistics" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {cards.map(({ key, label, icon: Icon }) => (
           <article key={key} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex items-start justify-between">
@@ -105,6 +107,11 @@ export function AdminDashboard() {
           <h2 className="font-semibold">Maintain the catalogue</h2>
           <p className="mt-2 text-sm text-slate-600">Add, edit, and remove product records and technical specifications.</p>
           <span className="mt-5 inline-flex text-sm font-semibold text-[#a96f48]">Manage products →</span>
+        </Link>
+        <Link href="/admin/companies" className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-[#c77d45]">
+          <h2 className="font-semibold">Review company applications</h2>
+          <p className="mt-2 text-sm text-slate-600">Approve, reject, or suspend company accounts and assign access roles.</p>
+          <span className="mt-5 inline-flex text-sm font-semibold text-[#a96f48]">Manage companies →</span>
         </Link>
       </section>
     </>

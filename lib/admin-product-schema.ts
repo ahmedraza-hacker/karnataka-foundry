@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ProductVisibility } from "@prisma/client";
 
 const nullableText = (maximum: number) =>
   z.string().trim().max(maximum).optional().nullable().transform((value) => value || null);
@@ -44,4 +45,29 @@ export const adminProductSchema = z.object({
     z.coerce.number().finite().positive().max(9_999_999_999.99).nullable(),
   ),
   isSample: z.boolean(),
+  visibility: z.nativeEnum(ProductVisibility),
+  selectedCompanyIds: z.array(z.string().min(1).max(64)).max(500)
+    .refine((ids) => new Set(ids).size === ids.length),
+}).superRefine((product, context) => {
+  if (product.visibility === ProductVisibility.SELECTED_COMPANIES && product.selectedCompanyIds.length === 0) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["selectedCompanyIds"],
+      message: "Select at least one approved company.",
+    });
+  }
+  if (product.visibility !== ProductVisibility.SELECTED_COMPANIES && product.selectedCompanyIds.length > 0) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["selectedCompanyIds"],
+      message: "Company access is only valid for selected-company products.",
+    });
+  }
+  if (product.visibility !== ProductVisibility.PUBLIC && product.imageUrl) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["imageUrl"],
+      message: "Remove public product images before restricting product visibility.",
+    });
+  }
 });

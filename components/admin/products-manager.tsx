@@ -22,7 +22,16 @@ type Product = {
   price: string | number | null;
   imageUrl: string | null;
   isSample: boolean;
+  visibility: "PUBLIC" | "APPROVED_BUYERS" | "SELECTED_COMPANIES";
+  companyAccess: { companyId: string }[];
   updatedAt: string;
+};
+
+type Company = {
+  id: string;
+  companyName: string;
+  city: string;
+  state: string;
 };
 
 type ProductForm = {
@@ -41,6 +50,8 @@ type ProductForm = {
   price: string;
   imageUrl: string;
   isSample: boolean;
+  visibility: Product["visibility"];
+  selectedCompanyIds: string[];
 };
 
 const emptyForm: ProductForm = {
@@ -59,9 +70,11 @@ const emptyForm: ProductForm = {
   price: "",
   imageUrl: "",
   isSample: true,
+  visibility: "PUBLIC",
+  selectedCompanyIds: [],
 };
 
-function toForm(product: Product): ProductForm {
+function toForm(product: Product, approvedCompanyIds: ReadonlySet<string>): ProductForm {
   return {
     name: product.name,
     slug: product.slug,
@@ -78,11 +91,16 @@ function toForm(product: Product): ProductForm {
     price: product.price?.toString() ?? "",
     imageUrl: product.imageUrl ?? "",
     isSample: product.isSample,
+    visibility: product.visibility,
+    selectedCompanyIds: product.companyAccess
+      .map((access) => access.companyId)
+      .filter((id) => approvedCompanyIds.has(id)),
   };
 }
 
 export function ProductsManager() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -98,9 +116,10 @@ export function ProductsManager() {
     setError("");
     try {
       const response = await fetch("/api/admin/products", { cache: "no-store" });
-      const result = (await response.json()) as { products?: Product[]; error?: string };
+      const result = (await response.json()) as { products?: Product[]; companies?: Company[]; error?: string };
       if (!response.ok) throw new Error(result.error ?? "Could not load products.");
       setProducts(result.products ?? []);
+      setCompanies(result.companies ?? []);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Could not load products.");
     } finally {
@@ -126,7 +145,7 @@ export function ProductsManager() {
 
   function openEditProduct(product: Product) {
     setEditing(product);
-    setForm(toForm(product));
+    setForm(toForm(product, new Set(companies.map((company) => company.id))));
     setCreating(true);
     setError("");
     setNotice("");
@@ -270,6 +289,14 @@ export function ProductsManager() {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
+  function updateVisibility(visibility: Product["visibility"]) {
+    setForm((current) => ({
+      ...current,
+      visibility,
+      selectedCompanyIds: visibility === "SELECTED_COMPANIES" ? current.selectedCompanyIds : [],
+    }));
+  }
+
   return (
     <>
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
@@ -307,9 +334,9 @@ export function ProductsManager() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[730px] text-left text-sm">
+            <table className="w-full min-w-[900px] text-left text-sm">
               <thead className="bg-[#f7f7f5] text-xs uppercase tracking-wide text-slate-500">
-                <tr><th className="px-5 py-3 font-semibold">Product</th><th className="px-5 py-3 font-semibold">Category</th><th className="px-5 py-3 font-semibold">Pricing</th><th className="px-5 py-3 font-semibold">Record type</th><th className="px-5 py-3"><span className="sr-only">Actions</span></th></tr>
+                <tr><th className="px-5 py-3 font-semibold">Product</th><th className="px-5 py-3 font-semibold">Category</th><th className="px-5 py-3 font-semibold">Pricing</th><th className="px-5 py-3 font-semibold">Visibility</th><th className="px-5 py-3 font-semibold">Record type</th><th className="px-5 py-3"><span className="sr-only">Actions</span></th></tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredProducts.map((product) => (
@@ -317,6 +344,7 @@ export function ProductsManager() {
                     <td className="px-5 py-4"><strong className="block font-semibold">{product.name}</strong><span className="mt-1 block text-xs text-slate-500">{product.sku} · /{product.slug}</span></td>
                     <td className="px-5 py-4 text-slate-600">{product.category}</td>
                     <td className="px-5 py-4 text-slate-600">{product.price ? `₹${Number(product.price).toLocaleString()}` : "Quote only"}</td>
+                    <td className="px-5 py-4 text-slate-600">{product.visibility === "PUBLIC" ? "Public" : product.visibility === "APPROVED_BUYERS" ? "Approved buyers" : "Selected companies"}</td>
                     <td className="px-5 py-4"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${product.isSample ? "bg-amber-50 text-amber-800" : "bg-emerald-50 text-emerald-700"}`}>{product.isSample ? "Sample" : "Catalogue"}</span></td>
                     <td className="whitespace-nowrap px-5 py-4 text-right">
                       <button type="button" onClick={() => openEditProduct(product)} className="mr-4 font-semibold text-[#a96f48] hover:underline">Edit</button>
@@ -353,6 +381,50 @@ export function ProductsManager() {
                 <Field label="Price (INR)" hint="Leave blank to use quote-only pricing."><input type="number" min="0.01" max="9999999999.99" step="0.01" value={form.price} onChange={(event) => updateField("price", event.target.value)} /></Field>
                 <Field label="Description" className="sm:col-span-2"><textarea required maxLength={5000} rows={4} value={form.description} onChange={(event) => updateField("description", event.target.value)} /></Field>
               </div>
+              <div className="space-y-4 rounded-lg border border-slate-200 p-4">
+                <Field label="Product visibility">
+                  <select value={form.visibility} onChange={(event) => updateVisibility(event.target.value as Product["visibility"])} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-normal text-slate-900">
+                    <option value="PUBLIC">Public — anyone can view</option>
+                    <option value="APPROVED_BUYERS">Approved buyers — approved buyer companies only</option>
+                    <option value="SELECTED_COMPANIES">Selected companies — explicitly authorized companies only</option>
+                  </select>
+                </Field>
+                <p className="text-xs leading-5 text-slate-500">
+                  Visibility is checked on the server for product pages and catalogue APIs. Existing products stay public unless changed here.
+                </p>
+                {form.visibility === "SELECTED_COMPANIES" && (
+                  <fieldset>
+                    <legend className="text-xs font-semibold text-slate-700">Companies allowed to view this product</legend>
+                    {companies.length === 0 ? (
+                      <p className="mt-2 text-sm text-amber-800">No approved companies are available. Approve a company first.</p>
+                    ) : (
+                      <div className="mt-2 max-h-48 space-y-2 overflow-y-auto rounded-lg border border-slate-200 p-3">
+                        {companies.map((company) => (
+                          <label key={company.id} className="flex items-start gap-2 text-sm font-normal">
+                            <input
+                              type="checkbox"
+                              checked={form.selectedCompanyIds.includes(company.id)}
+                              onChange={(event) => updateField(
+                                "selectedCompanyIds",
+                                event.target.checked
+                                  ? [...form.selectedCompanyIds, company.id]
+                                  : form.selectedCompanyIds.filter((id) => id !== company.id),
+                              )}
+                              className="mt-0.5"
+                            />
+                            <span>{company.companyName} <span className="text-xs text-slate-500">· {company.city}, {company.state}</span></span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </fieldset>
+                )}
+                {form.visibility !== "PUBLIC" && form.imageUrl && (
+                  <p role="alert" className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
+                    This image is stored at a public URL. Remove it before saving a restricted product; private image storage is not configured.
+                  </p>
+                )}
+              </div>
               <div className="rounded-lg border border-slate-200 p-4">
                 <p className="text-xs font-semibold text-slate-700">Product image</p>
                 <div className="mt-3 flex flex-wrap items-center gap-4">
@@ -362,14 +434,14 @@ export function ProductsManager() {
                     <div className="flex h-28 w-28 items-center justify-center rounded-lg bg-slate-100 text-center text-xs text-slate-500">No image uploaded</div>
                   )}
                   <div className="flex flex-wrap gap-2">
-                    <label className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-semibold hover:bg-slate-50 ${uploadingImage ? "pointer-events-none opacity-60" : ""}`}>
+                    <label className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-semibold hover:bg-slate-50 ${uploadingImage || form.visibility !== "PUBLIC" ? "pointer-events-none opacity-60" : ""}`}>
                       <ImagePlus size={16} /> {uploadingImage ? "Uploading…" : form.imageUrl ? "Replace image" : "Upload image"}
-                      <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" disabled={uploadingImage} onChange={(event) => void uploadProductImage(event)} className="sr-only" />
+                      <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" disabled={uploadingImage || form.visibility !== "PUBLIC"} onChange={(event) => void uploadProductImage(event)} className="sr-only" />
                     </label>
                     {form.imageUrl && <button type="button" onClick={() => updateField("imageUrl", "")} className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">Remove image</button>}
                   </div>
                 </div>
-                <p className="mt-3 text-xs text-slate-500">JPEG, PNG, WebP, or AVIF · max 5 MB. Stored in Vercel Blob and linked after saving this product.</p>
+                <p className="mt-3 text-xs text-slate-500">JPEG, PNG, WebP, or AVIF · max 5 MB. Stored in public Vercel Blob and available only for products marked Public.</p>
               </div>
               <label className="flex items-start gap-3 rounded-lg bg-[#f7f7f5] p-4 text-sm">
                 <input type="checkbox" checked={form.isSample} onChange={(event) => updateField("isSample", event.target.checked)} className="mt-0.5" />

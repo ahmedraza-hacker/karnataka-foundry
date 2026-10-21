@@ -1,70 +1,189 @@
 import Link from "next/link";
-import { ArrowDown, ArrowRight, ArrowUpRight, BadgeCheck, Boxes, Cog, Factory, MoveUpRight, ScanLine } from "lucide-react";
-import { FanIllustration } from "@/components/fan-illustration";
+import { ArrowDownRight, ArrowRight, ArrowUpRight } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
-import { getPublicProducts } from "@/lib/public-products";
+import { ProductImage } from "@/components/product-image";
+import { Reveal } from "@/components/reveal";
+import { getVisibleProducts } from "@/lib/public-products";
 
 export const dynamic = "force-dynamic";
 
-const capabilities = [
-  { icon: <Cog />, title: "Engineering-led", text: "Discuss the fit, function, and technical requirements of your application with our team." },
-  { icon: <BadgeCheck />, title: "Quality minded", text: "A manufacturing-focused approach, with inspection requirements agreed for your enquiry." },
-  { icon: <Boxes />, title: "OEM & bulk support", text: "Share project quantities and delivery expectations for a business-focused response." },
-  { icon: <ScanLine />, title: "Custom enquiries", text: "Drawings and application details help us understand your non-standard requirements." },
-];
-
 export default async function HomePage() {
-  const products = await getPublicProducts();
-  return <>
-    <section className="hero">
-      <div className="hero-grid" aria-hidden="true" />
-      <div className="hero-content">
-        <div className="hero-kicker"><span /> INDUSTRIAL AIRFLOW · OEM SOLUTIONS</div>
-        <h1>Precision engineered.<br /><em>Built for performance.</em></h1>
-        <p>Reliable AC motor cooling fan solutions for industrial applications, engineered around your performance and manufacturing requirements.</p>
-        <div className="hero-actions"><Link className="button button-copper" href="/products">Explore our products <ArrowRight size={17} /></Link><Link className="button button-glass" href="/quote">Request a quote <ArrowUpRight size={17} /></Link></div>
-        <div className="hero-note"><span className="note-line" /> A focused manufacturing partner for your next requirement</div>
+  const products = await getVisibleProducts();
+  const categories = Array.from(new Set(products.map((product) => product.category)));
+  const heroProduct = products.find((product) => product.image);
+
+  return (
+    <>
+      <section className="editorial-hero">
+        <div className="editorial-hero-copy">
+          <span className="editorial-kicker"><i /> INDUSTRIAL AIRFLOW</span>
+          <h1>KARNATAKA<br />FOUNDRY</h1>
+          <p className="editorial-tagline">ENGINEERED FLOW</p>
+          <p>
+            AC motor cooling fans and related airflow components for industrial
+            applications and OEM requirements.
+          </p>
+          <div className="editorial-actions">
+            <Link className="editorial-button editorial-button-orange" href="/products">
+              Explore products <ArrowUpRight size={17} />
+            </Link>
+            <Link className="editorial-text-link" href="/quote">
+              Contact us <ArrowRight size={16} />
+            </Link>
+          </div>
+          <a className="editorial-scroll" href="#range">
+            <ArrowDownRight size={15} /> DISCOVER THE RANGE
+          </a>
+        </div>
+        <div className="editorial-hero-image">
+          {heroProduct ? (
+            <ProductImage
+              src={heroProduct.image}
+              alt={`Product preview: ${heroProduct.name}`}
+              width={1100}
+              height={900}
+              className="editorial-product-photo"
+            />
+          ) : (
+            <div className="editorial-no-image">PRODUCT PREVIEWS UNAVAILABLE</div>
+          )}
+          <div className="editorial-image-caption">
+            <span>PRODUCT PREVIEW</span>
+            <span>01 — AIRFLOW COMPONENTS</span>
+          </div>
+          <span className="editorial-index" aria-hidden="true">KF / 01</span>
+        </div>
+        <div className="editorial-hero-foot">
+          <span>ENGINEERED AROUND APPLICATION REQUIREMENTS</span>
+          <span>PRODUCT DETAILS ARE CONFIRMED THROUGH ENQUIRY</span>
+        </div>
+      </section>
+
+      <div>
+        <section className="editorial-intro" id="about">
+          <span className="editorial-overline">A PRACTICAL STARTING POINT</span>
+          <div>
+            <h2>Components that move<br />air—and work <em>forward.</em></h2>
+            <p>
+              Explore AC motor cooling fan solutions and related components.
+              Share your application, drawings, and technical requirements to
+              begin a product conversation.
+            </p>
+            <Link className="editorial-underlined-link" href="/quote">
+              Tell us what you need <ArrowUpRight size={16} />
+            </Link>
+          </div>
+          <span className="editorial-section-number">01 / INTRODUCTION</span>
+        </section>
+
+        {categories.length > 0 && (
+          <section className="editorial-categories" id="range" aria-labelledby="range-heading">
+            <div className="editorial-section-heading">
+              <div>
+                <span className="editorial-overline">EXPLORE THE CATALOGUE</span>
+                <h2 id="range-heading">Find your<br /><em>starting point.</em></h2>
+              </div>
+              <p>Browse by category, then review the available product details.</p>
+            </div>
+            <div className="editorial-category-list">
+              {categories.map((category, index) => {
+                const count = products.filter((product) => product.category === category).length;
+                return (
+                  <Reveal key={category}>
+                    <Link
+                      className="editorial-category-row"
+                      href={`/products?category=${encodeURIComponent(category)}`}
+                    >
+                      <span>0{index + 1}</span>
+                      <strong>{category}</strong>
+                      <small>{count} {count === 1 ? "LISTING" : "LISTINGS"}</small>
+                      <ArrowUpRight size={18} aria-hidden="true" />
+                    </Link>
+                  </Reveal>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        <section className="editorial-featured" aria-labelledby="featured-heading">
+          <div className="editorial-featured-heading">
+            <div>
+              <span className="editorial-overline">SELECTED PRODUCT PREVIEWS</span>
+              <h2 id="featured-heading">The catalogue,<br /><em>in focus.</em></h2>
+            </div>
+            <Link className="editorial-underlined-link" href="/products">
+              View all products <ArrowUpRight size={16} />
+            </Link>
+          </div>
+          {products.length > 0 ? (
+            <div className="product-grid editorial-product-grid">
+              {products.slice(0, 3).map((product, index) => (
+                <Reveal key={product.slug} delay={index * 80}>
+                  <ProductCard product={product} index={index} />
+                </Reveal>
+              ))}
+            </div>
+          ) : (
+            <p className="editorial-empty">
+              The catalogue is temporarily unavailable. Please contact us about your requirements.
+            </p>
+          )}
+          <p className="editorial-disclaimer">
+            Product previews may be illustrative. Confirm specifications, availability, pricing, and order quantities with the company.
+          </p>
+        </section>
+
+        <section className="editorial-company">
+          <div className="editorial-company-image">
+            {heroProduct ? (
+              <ProductImage
+                src={heroProduct.image}
+                alt={`Product preview: ${heroProduct.name}`}
+                width={900}
+                height={900}
+                className="editorial-secondary-photo"
+              />
+            ) : (
+              <div className="editorial-no-image">PRODUCT PREVIEWS UNAVAILABLE</div>
+            )}
+            <span>PRODUCT PREVIEW / VERIFY SPECIFICATION</span>
+          </div>
+          <div className="editorial-company-copy">
+            <span className="editorial-overline">FROM REQUIREMENT TO ENQUIRY</span>
+            <h2>Good work begins<br />with a <em>conversation.</em></h2>
+            <p>
+              Technical fit depends on the application. Share motor details,
+              operating conditions, drawings, and inspection expectations so
+              the team can review your requirements.
+            </p>
+            <ol className="editorial-steps">
+              <li><span>01</span><div><strong>Describe</strong><small>Application and operating conditions</small></div></li>
+              <li><span>02</span><div><strong>Share</strong><small>Dimensions, drawings, or part references</small></div></li>
+              <li><span>03</span><div><strong>Discuss</strong><small>Scope and next steps through an enquiry</small></div></li>
+            </ol>
+            <Link className="editorial-underlined-link" href="/quote">
+              Start an enquiry <ArrowUpRight size={16} />
+            </Link>
+          </div>
+        </section>
+
+        <section className="editorial-contact">
+          <span className="editorial-overline">KARNATAKA FOUNDRY / ENGINEERED FLOW</span>
+          <h2>Contact<br />Karnataka Foundry.</h2>
+          <div className="editorial-contact-details">
+            <p><span>OWNER</span><strong>Abdul Khadar</strong></p>
+            <p><span>EMAIL</span><a href="mailto:karnatakafoundry@gmail.com">karnatakafoundry@gmail.com</a></p>
+            <p><span>MOBILE</span><a href="tel:9880430017">9880430017</a></p>
+            <p><span>ALTERNATE</span><a href="tel:9986333191">9986333191</a></p>
+            <p>Send your application details and the team can follow up with next steps.</p>
+            <Link className="editorial-button editorial-button-light" href="/quote">
+              Contact us / Send an enquiry <ArrowUpRight size={17} />
+            </Link>
+          </div>
+          <span className="editorial-contact-index">KF / 02</span>
+        </section>
       </div>
-      <div className="hero-visual">
-        <div className="hero-orbit orbit-one" /><div className="hero-orbit orbit-two" />
-        <FanIllustration variant="hero" />
-        <div className="hero-visual-tag"><span>01 / AIRFLOW</span><strong>Designed around<br />the application</strong></div>
-        <div className="hero-dimension">Ø <span>ENGINEERED TO SPEC</span></div>
-      </div>
-      <a className="hero-scroll" href="#featured"><ArrowDown size={14} /> SCROLL TO EXPLORE</a>
-      <div className="hero-index">KF — 01</div>
-    </section>
-
-    <section className="trust-strip" aria-label="Company focus">
-      <span>AC MOTOR COOLING</span><i /><span>INDUSTRIAL COMPONENTS</span><i /><span>OEM ENQUIRIES</span><i /><span>ENGINEERED AIRFLOW</span>
-    </section>
-
-    <section className="section section-featured" id="featured">
-      <div className="section-heading">
-        <div><span className="eyebrow">01 / PRODUCT RANGE</span><h2>Airflow solutions<br /><em>for industry.</em></h2></div>
-        <div className="heading-aside"><p>Explore AC motor cooling and related fan components. Technical details are confirmed against each project enquiry.</p><Link className="text-link" href="/products">View all products <ArrowUpRight size={17} /></Link></div>
-      </div>
-      <div className="product-grid">{products.slice(0, 3).map((product, index) => <ProductCard key={product.slug} product={product} index={index} />)}</div>
-      <div className="sample-notice"><span>NOTE / 01</span><p>Confirm product specifications, availability, and pricing with Karnataka Foundry before ordering.</p></div>
-    </section>
-
-    <section className="section capability-section" id="about">
-      <div className="capability-intro"><span className="eyebrow eyebrow-light">02 / WHY KARNATAKA FOUNDRY</span><h2>Practical support.<br /><em>Built around your needs.</em></h2><p>Clear communication from first technical conversation through quotation. Tell us what your application needs.</p><Link className="button button-glass" href="/quote">Talk to our team <ArrowRight size={17} /></Link><span className="capability-number">KF / 02</span></div>
-      <div className="capability-grid">{capabilities.map((item, index) => <article className="capability-card" key={item.title}><span className="capability-icon">{item.icon}</span><small>0{index + 1} / SUPPORT</small><h3>{item.title}</h3><p>{item.text}</p><MoveUpRight className="capability-arrow" size={18} /></article>)}</div>
-    </section>
-
-    <section className="section industries-section" id="industries">
-      <div className="industries-copy"><span className="eyebrow">03 / APPLICATION LANDSCAPE</span><h2>Made for the<br /><em>work behind work.</em></h2><p>We welcome enquiries from organisations working across these industrial sectors. The list describes target applications, not confirmed customers or endorsements.</p></div>
-      <div className="industry-list"><div><span>01</span><strong>Electrical motors</strong><ArrowUpRight size={18} /></div><div><span>02</span><strong>Industrial machinery</strong><ArrowUpRight size={18} /></div><div><span>03</span><strong>HVAC equipment</strong><ArrowUpRight size={18} /></div><div><span>04</span><strong>OEM manufacturing</strong><ArrowUpRight size={18} /></div></div>
-      <Factory className="industry-watermark" aria-hidden="true" />
-    </section>
-
-    <section className="manufacturing-section" id="quality">
-      <div className="manufacturing-visual"><div className="manufacturing-grid" /><div className="manufacturing-ring"><span>ENGINEERED<br />TO REQUIREMENT</span></div><div className="manufacturing-caption"><span>PROCESS / 04</span><strong>Precision begins<br />with understanding.</strong></div></div>
-      <div className="manufacturing-copy"><span className="eyebrow">04 / MANUFACTURING APPROACH</span><h2>From specification<br />to <em>finished component.</em></h2><p>Every requirement starts with the right conversation. Share drawings, application details, and inspection expectations so the team can assess your needs.</p><div className="process-steps"><div><span>01</span><strong>Understand</strong><small>Application & requirements</small></div><div><span>02</span><strong>Evaluate</strong><small>Technical review & quotation</small></div><div><span>03</span><strong>Align</strong><small>Scope & next steps</small></div></div><p className="small-disclaimer">Manufacturing imagery and process details are placeholders; verified factory media and capabilities are to be supplied by the company.</p></div>
-    </section>
-
-    <section className="closing-cta"><div><span className="eyebrow eyebrow-light">LET'S DISCUSS YOUR APPLICATION</span><h2>Looking for the right<br /><em>cooling fan?</em></h2><p>Share your requirements and our team can help you take the next step.</p></div><div className="closing-actions"><Link className="button button-copper" href="/products">Browse products <ArrowRight size={17} /></Link><Link className="button button-glass" href="/quote">Request a quote <ArrowUpRight size={17} /></Link></div><div className="cta-decoration"><FanIllustration /></div></section>
-    <div className="sr-only"><Link href="/products">Products</Link><Link href="/quote">Request a quotation</Link></div>
-  </>;
+    </>
+  );
 }

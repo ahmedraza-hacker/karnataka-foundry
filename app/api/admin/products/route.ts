@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { adminProductSchema } from "@/lib/admin-product-schema";
+import { areApprovedCompanies } from "@/lib/product-company-access";
 import { prisma } from "@/lib/prisma";
 
 async function authorize() {
@@ -19,8 +20,18 @@ export async function GET() {
   if (denied) return denied;
 
   try {
-    const products = await prisma.product.findMany({ orderBy: { updatedAt: "desc" } });
-    return NextResponse.json({ products });
+    const [products, companies] = await Promise.all([
+      prisma.product.findMany({
+        include: { companyAccess: { select: { companyId: true } } },
+        orderBy: { updatedAt: "desc" },
+      }),
+      prisma.company.findMany({
+        where: { status: "APPROVED", role: { not: null } },
+        select: { id: true, companyName: true, city: true, state: true },
+        orderBy: { companyName: "asc" },
+      }),
+    ]);
+    return NextResponse.json({ products, companies });
   } catch {
     console.error("Unable to load admin products.");
     return NextResponse.json({ error: "Unable to load products." }, { status: 500 });
@@ -44,7 +55,25 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const product = await prisma.product.create({ data: parsed.data });
+    const { selectedCompanyIds, ...productData } = parsed.data;
+    const product = await prisma.$transaction(async (transaction) => {
+      if (!(await areApprovedCompanies(selectedCompanyIds, transaction))) {
+        return null;
+      }
+      const createdProduct = await transaction.product.create({ data: productData });
+      if (selectedCompanyIds.length > 0) {
+        await transaction.companyProductAccess.createMany({
+          data: selectedCompanyIds.map((companyId) => ({
+            companyId,
+            productId: createdProduct.id,
+          })),
+        });
+      }
+      return createdProduct;
+    });
+    if (!product) {
+      return NextResponse.json({ error: "Choose only approved companies." }, { status: 400 });
+    }
     return NextResponse.json({ product }, { status: 201 });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {

@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Boxes, LayoutDashboard, LogOut, MessageSquareText } from "lucide-react";
+import { Boxes, Building2, LayoutDashboard, LogOut, MessageSquareText } from "lucide-react";
 import type { ReactNode } from "react";
 
 const navigation = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/enquiries", label: "Enquiries", icon: MessageSquareText },
+  { href: "/admin/companies", label: "Companies", icon: Building2 },
   { href: "/admin/products", label: "Products", icon: Boxes },
 ];
 
@@ -22,7 +23,7 @@ export function AdminShell({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-[#f3f3f0] text-[#171a1c] lg:flex">
+    <div className="admin-console min-h-screen bg-[#f3f3f0] text-[#171a1c] lg:flex">
       <aside className="flex w-full shrink-0 flex-col bg-[#202527] text-white lg:sticky lg:top-0 lg:h-screen lg:w-64">
         <Link href="/admin" className="flex items-center gap-3 border-b border-white/10 px-6 py-6">
           <span className="grid h-10 w-10 place-items-center rounded-full border border-[#c77d45] text-sm font-bold text-[#e4a579]">KF</span>

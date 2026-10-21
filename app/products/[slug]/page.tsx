@@ -11,16 +11,11 @@ import {
 } from "lucide-react";
 import { AddToBasket } from "@/components/add-to-basket";
 import { ProductCard } from "@/components/product-card";
-import { products as sampleProducts } from "@/lib/products";
 import { ProductImage } from "@/components/product-image";
-import { getPublicProducts } from "@/lib/public-products";
+import { getVisibleProducts } from "@/lib/public-products";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
-
-export function generateStaticParams() {
-  return sampleProducts.map((product) => ({ slug: product.slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -28,7 +23,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const products = await getPublicProducts();
+  const products = await getVisibleProducts();
   const product = products.find((item) => item.slug === slug);
 
   return {
@@ -43,7 +38,7 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const products = await getPublicProducts();
+  const products = await getVisibleProducts();
   const product = products.find((item) => item.slug === slug);
 
   if (!product) notFound();

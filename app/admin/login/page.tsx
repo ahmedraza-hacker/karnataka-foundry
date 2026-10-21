@@ -39,10 +39,10 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
+    <main className="admin-login flex min-h-screen items-center justify-center bg-gray-100 p-6">
       <form
         onSubmit={handleLogin}
-        className="w-full max-w-md space-y-5 rounded-2xl bg-white p-8 shadow-lg"
+        className="admin-login-card w-full max-w-md space-y-5 rounded-2xl bg-white p-8 shadow-lg"
       >
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900">

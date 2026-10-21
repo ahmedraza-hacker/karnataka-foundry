@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { adminProductSchema } from "@/lib/admin-product-schema";
+import { areApprovedCompanies } from "@/lib/product-company-access";
 import { prisma } from "@/lib/prisma";
 
 export async function PATCH(
@@ -33,12 +34,29 @@ export async function PATCH(
   }
 
   try {
-    const result = await prisma.product.updateMany({ where: { id }, data: parsed.data });
-    if (result.count === 0) {
-      return NextResponse.json({ error: "Product not found." }, { status: 404 });
+    const { selectedCompanyIds, ...productData } = parsed.data;
+    const updated = await prisma.$transaction(async (transaction) => {
+      if (!(await areApprovedCompanies(selectedCompanyIds, transaction))) {
+        return false;
+      }
+
+      await transaction.product.update({ where: { id }, data: productData });
+      await transaction.companyProductAccess.deleteMany({ where: { productId: id } });
+      if (selectedCompanyIds.length > 0) {
+        await transaction.companyProductAccess.createMany({
+          data: selectedCompanyIds.map((companyId) => ({ companyId, productId: id })),
+        });
+      }
+      return true;
+    });
+    if (!updated) {
+      return NextResponse.json({ error: "Choose only approved companies." }, { status: 400 });
     }
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      return NextResponse.json({ error: "Product not found." }, { status: 404 });
+    }
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return NextResponse.json({ error: "The product slug or SKU is already in use." }, { status: 409 });
     }

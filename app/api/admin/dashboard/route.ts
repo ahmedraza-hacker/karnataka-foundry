@@ -12,16 +12,17 @@ export async function GET() {
   }
 
   try {
-    const [total, newCount, reviewing, quoted, closed, products] = await Promise.all([
+    const [total, newCount, reviewing, quoted, closed, products, pendingCompanies] = await Promise.all([
       prisma.enquiry.count(),
       prisma.enquiry.count({ where: { status: "NEW" } }),
       prisma.enquiry.count({ where: { status: "REVIEWING" } }),
       prisma.enquiry.count({ where: { status: "QUOTED" } }),
       prisma.enquiry.count({ where: { status: "CLOSED" } }),
       prisma.product.count(),
+      prisma.company.count({ where: { status: "PENDING" } }),
     ]);
 
-    return NextResponse.json({ total, new: newCount, reviewing, quoted, closed, products });
+    return NextResponse.json({ total, new: newCount, reviewing, quoted, closed, products, pendingCompanies });
   } catch {
     console.error("Unable to load admin dashboard statistics.");
     return NextResponse.json({ error: "Unable to load dashboard statistics." }, { status: 500 });

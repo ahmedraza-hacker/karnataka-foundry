@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
-import { getPublicProducts } from "@/lib/public-products";
+import { getVisibleProducts } from "@/lib/public-products";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const search = request.nextUrl.searchParams.get("search")?.trim().slice(0, 160);
     const category = request.nextUrl.searchParams.get("category")?.trim();
 
-    const allProducts = await getPublicProducts();
+    const allProducts = await getVisibleProducts();
     const query = search?.toLocaleLowerCase();
     const products = allProducts.filter((product) => {
       const matchesSearch =
@@ -22,12 +22,15 @@ export async function GET(request: NextRequest) {
       return matchesSearch && matchesCategory;
     }).sort((left, right) => left.name.localeCompare(right.name));
 
-    return NextResponse.json({ success: true, products });
+    return NextResponse.json(
+      { success: true, products },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
   } catch {
     console.error("Products API error.");
     return NextResponse.json(
       { success: false, message: "Unable to fetch products" },
-      { status: 500 }
+      { status: 500, headers: { "Cache-Control": "private, no-store" } }
     );
   }
 }
