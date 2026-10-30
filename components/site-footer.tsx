@@ -14,7 +14,7 @@ export function SiteFooter() {
         <div className="footer-column">
           <h3>Explore</h3>
           <Link href="/products">Products</Link>
-          <Link href="/#about">About Karnataka Foundry</Link>
+          <Link href="/about">About Karnataka Foundry</Link>
           <Link href="/quote">Contact and enquiries</Link>
           <Link href="/cart">Enquiry basket</Link>
         </div>
@@ -26,7 +26,7 @@ export function SiteFooter() {
         <div className="footer-column">
           <h3>Contact</h3>
           <span>Abdul Khadar · Owner</span>
-          <a href="mailto:karnatakafoundry@gmail.com">karnatakafoundry@gmail.com</a>
+          <a href="mailto:karnatakfoundry@gmail.com">karnatakfoundry@gmail.com</a>
           <a href="tel:9880430017">9880430017</a>
           <a href="tel:9986333191">9986333191</a>
         </div>

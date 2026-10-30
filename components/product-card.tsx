@@ -1,6 +1,6 @@
 
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { ProductImage } from "@/components/product-image";
 
@@ -50,13 +50,13 @@ export function ProductCard({
           <span className="availability">
             <i /> Quote on request
           </span>
-
-          <Link
-            href={`/products/${product.slug}`}
-            className="round-arrow"
-            aria-label={`View ${product.name}`}
-          >
-            <ArrowUpRight size={17} />
+        </div>
+        <div className="product-card-actions">
+          <Link href={`/products/${product.slug}`}>
+            View details <ArrowUpRight size={15} />
+          </Link>
+          <Link href={`/quote?product=${encodeURIComponent(product.sku)}`}>
+            Request quote <ArrowRight size={15} />
           </Link>
         </div>
       </div>

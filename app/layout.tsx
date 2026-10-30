@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CartProvider } from "@/components/cart-provider";
+import { SiteBackgroundVideo } from "@/components/site-background-video";
 import { SiteChrome } from "@/components/site-chrome";
 import Providers from "./providers";
 import "./globals.css";
@@ -21,8 +22,10 @@ export default function RootLayout({
       <body>
         <Providers>
           <CartProvider>
-            <SiteChrome />
+            <SiteBackgroundVideo />
+            <SiteChrome position="header" />
             <main>{children}</main>
+            <SiteChrome position="footer" />
           </CartProvider>
         </Providers>
       </body>

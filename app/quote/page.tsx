@@ -17,7 +17,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
         <span className="eyebrow">KARNATAKA FOUNDRY / ENGINEERED FLOW</span>
         <h2>Let’s discuss<br /><em>your requirement.</em></h2>
         <p>Contact Abdul Khadar or send your product and application details using the enquiry form.</p>
-        <div className="contact-detail"><Mail size={18} /><div><small>EMAIL</small><a href="mailto:karnatakafoundry@gmail.com">karnatakafoundry@gmail.com</a></div></div>
+        <div className="contact-detail"><Mail size={18} /><div><small>EMAIL</small><a href="mailto:karnatakfoundry@gmail.com">karnatakfoundry@gmail.com</a></div></div>
         <div className="contact-detail"><Phone size={18} /><div><small>MOBILE</small><a href="tel:9880430017">9880430017</a></div></div>
         <div className="contact-detail"><Phone size={18} /><div><small>ALTERNATE PHONE</small><a href="tel:9986333191">9986333191</a></div></div>
         <div className="contact-detail"><span aria-hidden="true" className="contact-owner-mark">KF</span><div><small>OWNER</small><span>Abdul Khadar</span></div></div>
