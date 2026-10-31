@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { isAdminSession } from "@/lib/admin-auth";
 import { isApprovedCompany, type ApprovedCompanyContext } from "@/lib/company-auth";
 import { products as sampleProducts, type Product } from "@/lib/products";
+import { getProductImageSource } from "@/lib/product-image";
 import { prisma } from "@/lib/prisma";
 
 function fromDatabaseProduct(product: Prisma.ProductGetPayload<Record<string, never>>): Product {
@@ -18,7 +19,11 @@ function fromDatabaseProduct(product: Prisma.ProductGetPayload<Record<string, ne
     application: "To be confirmed",
     compatibleFrames: product.compatibleFrames ?? undefined,
     description: product.description,
-    image: product.imageUrl ?? "",
+    image: getProductImageSource({
+      slug: product.slug,
+      visibility: product.visibility,
+      imageUrl: product.imageUrl,
+    }),
     minimumOrderQty: product.minimumOrderQty,
     price: product.price?.toString() ?? null,
     isSample: product.isSample,

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ProductVisibility } from "@prisma/client";
+import { isProductImageUrlForVisibility } from "@/lib/product-image";
 
 const nullableText = (maximum: number) =>
   z.string().trim().max(maximum).optional().nullable().transform((value) => value || null);
@@ -16,15 +17,7 @@ const nullableNumber = (maximum: number, integer = false) =>
 const blobImageUrl = z.preprocess(
   (value) => (value === "" || value === null ? null : value),
   z.string().url().max(2048).nullable(),
-).refine((value) => {
-  if (value === null) return true;
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" && url.hostname.endsWith(".public.blob.vercel-storage.com");
-  } catch {
-    return false;
-  }
-}, "Use an uploaded public Vercel Blob image.");
+);
 
 export const adminProductSchema = z.object({
   name: z.string().trim().min(1).max(160),
@@ -63,11 +56,17 @@ export const adminProductSchema = z.object({
       message: "Company access is only valid for selected-company products.",
     });
   }
-  if (product.visibility !== ProductVisibility.PUBLIC && product.imageUrl) {
+  if (
+    product.imageUrl &&
+    !isProductImageUrlForVisibility(product.imageUrl, product.visibility)
+  ) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["imageUrl"],
-      message: "Remove public product images before restricting product visibility.",
+      message:
+        product.visibility === ProductVisibility.PUBLIC
+          ? "Use an uploaded public Vercel Blob image."
+          : "Use an uploaded private Vercel Blob image for restricted products.",
     });
   }
 });

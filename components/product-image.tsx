@@ -33,6 +33,7 @@ export function ProductImage({
       width={width}
       height={height}
       className={className}
+      unoptimized={src.startsWith("/api/")}
       onError={() => setFailedSource(src)}
     />
   );

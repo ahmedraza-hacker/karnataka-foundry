@@ -4,6 +4,10 @@ import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent, typ
 import { put } from "@vercel/blob/client";
 import { ImagePlus, Plus, Search, X } from "lucide-react";
 import { ProductImage } from "@/components/product-image";
+import {
+  getProductImageAccess,
+  isProductImageUrlForVisibility,
+} from "@/lib/product-image";
 
 type Product = {
   id: string;
@@ -96,6 +100,11 @@ function toForm(product: Product, approvedCompanyIds: ReadonlySet<string>): Prod
       .map((access) => access.companyId)
       .filter((id) => approvedCompanyIds.has(id)),
   };
+}
+
+function getAdminImagePreviewSource(imageUrl: string): string {
+  if (!isProductImageUrlForVisibility(imageUrl, "APPROVED_BUYERS")) return imageUrl;
+  return `/api/admin/product-image?url=${encodeURIComponent(imageUrl)}`;
 }
 
 export function ProductsManager() {
@@ -206,14 +215,15 @@ export function ProductsManager() {
     const timeout = window.setTimeout(() => controller.abort(), 60_000);
     try {
       const filename = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
-      const pathname = `products/${filename}`;
+      const access = getProductImageAccess(form.visibility);
+      const pathname = `products/${access === "public" ? "public" : "restricted"}/${filename}`;
       const tokenResponse = await fetch("/api/admin/product-image", {
         method: "POST",
         signal: controller.signal,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "blob.generate-client-token",
-          payload: { pathname, multipart: false, clientPayload: null },
+          payload: { pathname, multipart: false, clientPayload: form.visibility },
         }),
       });
       authorizationStatus = tokenResponse.status;
@@ -234,7 +244,7 @@ export function ProductsManager() {
       uploadStage = "blob";
       clientUploadToken = tokenResult.clientToken;
       const blob = await put(pathname, file, {
-        access: "public",
+        access,
         token: clientUploadToken,
         contentType: file.type,
         abortSignal: controller.signal,
@@ -254,16 +264,10 @@ export function ProductsManager() {
         uploadStage === "authorization"
           ? `HTTP ${authorizationStatus ?? "unknown"}`
           : "not exposed by the Vercel Blob SDK";
-      const privateStoreFailure =
-        uploadStage === "blob" &&
-        message.includes("Cannot use public access on a private store");
-      const userMessage = privateStoreFailure
-        ? "This Vercel Blob store is private, but product images need public access. Connect a public Blob store and update BLOB_READ_WRITE_TOKEN."
-        : message;
       console.error(
         `[product image upload] stage=${uploadStage}; status=${status}; ${message}`,
       );
-      setError(userMessage);
+      setError(message);
     } finally {
       window.clearTimeout(timeout);
       setUploadingImage(false);
@@ -419,9 +423,9 @@ export function ProductsManager() {
                     )}
                   </fieldset>
                 )}
-                {form.visibility !== "PUBLIC" && form.imageUrl && (
+                {form.imageUrl && !isProductImageUrlForVisibility(form.imageUrl, form.visibility) && (
                   <p role="alert" className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
-                    This image is stored at a public URL. Remove it before saving a restricted product; private image storage is not configured.
+                    This image uses a different access level. Upload a replacement for the selected visibility before saving.
                   </p>
                 )}
               </div>
@@ -429,19 +433,19 @@ export function ProductsManager() {
                 <p className="text-xs font-semibold text-slate-700">Product image</p>
                 <div className="mt-3 flex flex-wrap items-center gap-4">
                   {form.imageUrl ? (
-                    <ProductImage src={form.imageUrl} alt="Product image preview" width={112} height={112} className="h-28 w-28 rounded-lg border border-slate-200 bg-white object-contain p-2" fallbackClassName="flex h-28 w-28 items-center justify-center rounded-lg bg-slate-100 text-center text-xs text-slate-500" />
+                    <ProductImage src={getAdminImagePreviewSource(form.imageUrl)} alt="Product image preview" width={112} height={112} className="h-28 w-28 rounded-lg border border-slate-200 bg-white object-contain p-2" fallbackClassName="flex h-28 w-28 items-center justify-center rounded-lg bg-slate-100 text-center text-xs text-slate-500" />
                   ) : (
                     <div className="flex h-28 w-28 items-center justify-center rounded-lg bg-slate-100 text-center text-xs text-slate-500">No image uploaded</div>
                   )}
                   <div className="flex flex-wrap gap-2">
-                    <label className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-semibold hover:bg-slate-50 ${uploadingImage || form.visibility !== "PUBLIC" ? "pointer-events-none opacity-60" : ""}`}>
+                    <label className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-semibold hover:bg-slate-50 ${uploadingImage ? "pointer-events-none opacity-60" : ""}`}>
                       <ImagePlus size={16} /> {uploadingImage ? "Uploading…" : form.imageUrl ? "Replace image" : "Upload image"}
-                      <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" disabled={uploadingImage || form.visibility !== "PUBLIC"} onChange={(event) => void uploadProductImage(event)} className="sr-only" />
+                      <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" disabled={uploadingImage} onChange={(event) => void uploadProductImage(event)} className="sr-only" />
                     </label>
                     {form.imageUrl && <button type="button" onClick={() => updateField("imageUrl", "")} className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">Remove image</button>}
                   </div>
                 </div>
-                <p className="mt-3 text-xs text-slate-500">JPEG, PNG, WebP, or AVIF · max 5 MB. Stored in public Vercel Blob and available only for products marked Public.</p>
+                <p className="mt-3 text-xs text-slate-500">JPEG, PNG, WebP, or AVIF · max 5 MB. Public products use public Blob storage; restricted products use private Blob storage.</p>
               </div>
               <label className="flex items-start gap-3 rounded-lg bg-[#f7f7f5] p-4 text-sm">
                 <input type="checkbox" checked={form.isSample} onChange={(event) => updateField("isSample", event.target.checked)} className="mt-0.5" />

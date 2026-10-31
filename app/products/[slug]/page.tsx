@@ -66,7 +66,7 @@ export default async function ProductDetailPage({
   ];
 
   return (
-    <div className="page-shell">
+    <div className="page-shell product-detail-page">
       <div className="detail-top">
         <Link href="/products" className="back-link">
           <ArrowLeft size={15} />
