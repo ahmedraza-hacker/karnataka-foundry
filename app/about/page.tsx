@@ -301,7 +301,7 @@ export default function AboutPage() {
           <span className="about-contact-brand">KF</span>
           <strong>Karnatak Foundry</strong>
           <span>Owner · Abdul Khadar</span>
-          <a href="mailto:karnatakafoundry@gmail.com">karnatakafoundry@gmail.com</a>
+          <a href="mailto:karnatakfoundry@gmail.com">karnatakfoundry@gmail.com</a>
           <a href="tel:9880430017">9880430017</a>
           <a href="tel:9986333191">9986333191 <span>ALTERNATIVE</span></a>
         </address>

@@ -20,7 +20,7 @@ export default async function HomePage() {
         <div className="cinematic-hero-grid" aria-hidden="true" />
         <div className="cinematic-hero-content">
           <span className="cinematic-eyebrow"><i /> INDUSTRIAL AIRFLOW / KARNATAKA, INDIA</span>
-          <h1 id="hero-heading">KARNATAKA<br />FOUNDRY</h1>
+          <h1 id="hero-heading">KARNATAK<br />FOUNDRY</h1>
           <p className="cinematic-tagline">ENGINEERED FLOW.</p>
           <p className="cinematic-description">
             Precision-engineered AC motor cooling fans and industrial airflow

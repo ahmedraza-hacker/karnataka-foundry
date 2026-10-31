@@ -28,7 +28,7 @@ export function AdminShell({
         <Link href="/admin" className="flex items-center gap-3 border-b border-white/10 px-6 py-6">
           <span className="grid h-10 w-10 place-items-center rounded-full border border-[#c77d45] text-sm font-bold text-[#e4a579]">KF</span>
           <span>
-            <strong className="block text-xs tracking-[.15em]">KARNATAKA</strong>
+            <strong className="block text-xs tracking-[.15em]">KARNATAK</strong>
             <small className="mt-1 block text-[9px] tracking-[.13em] text-white/50">FOUNDRY ADMIN</small>
           </span>
         </Link>
