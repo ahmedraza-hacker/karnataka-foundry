@@ -4,7 +4,7 @@ import { QuoteForm } from "@/components/quote-form";
 
 export const metadata: Metadata = {
   title: "Request a Quotation",
-  description: "Send Karnataka Foundry your AC motor cooling fan requirements and request a technical quotation.",
+  description: "Send Karnatak Foundry your AC motor cooling fan requirements and request a technical quotation.",
 };
 
 export default async function QuotePage({ searchParams }: { searchParams: Promise<{ product?: string; products?: string }> }) {
@@ -14,7 +14,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
     <div className="page-banner quote-banner"><div className="page-banner-inner"><span className="eyebrow eyebrow-light">LET'S START A CONVERSATION / 02</span><h1>Tell us what<br /><em>you need.</em></h1><p>Share your application and technical requirements. Our team can review the details and respond with next steps.</p><div className="breadcrumbs"><span>HOME</span><b>/</b><strong>ENQUIRY</strong></div></div><div className="banner-art"><span>TECHNICAL ENQUIRIES / KF</span><div className="banner-ring" /></div></div>
     <section className="quote-layout" id="contact">
       <div className="quote-sidebar">
-        <span className="eyebrow">KARNATAKA FOUNDRY / ENGINEERED FLOW</span>
+        <span className="eyebrow">KARNATAK FOUNDRY / ENGINEERED FLOW</span>
         <h2>Let’s discuss<br /><em>your requirement.</em></h2>
         <p>Contact Abdul Khadar or send your product and application details using the enquiry form.</p>
         <div className="contact-detail"><Mail size={18} /><div><small>EMAIL</small><a href="mailto:karnatakfoundry@gmail.com">karnatakfoundry@gmail.com</a></div></div>

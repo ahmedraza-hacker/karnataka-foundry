@@ -1,10 +1,10 @@
-# Karnataka Foundry website
+# Karnatak Foundry website
 
 A responsive Next.js app for an industrial AC motor cooling fan manufacturer. It includes a sample product catalogue, a temporary enquiry basket, product detail pages, and a quotation enquiry form backed by PostgreSQL.
 
 ## Important status
 
-This is a development foundation, **not a production-ready commerce platform**. It now includes company registration and admin approval, approved-company sign-in, and server-enforced product visibility. Catalog items are illustrative placeholders, not verified Karnataka Foundry products or specifications. No orders or payments are taken. A successful quotation form response means that the enquiry was saved to the configured database; it is not a quote, order confirmation, stock reservation, or response-time commitment.
+This is a development foundation, **not a production-ready commerce platform**. It now includes company registration and admin approval, approved-company sign-in, and server-enforced product visibility. Catalog items are illustrative placeholders, not verified Karnatak Foundry products or specifications. No orders or payments are taken. A successful quotation form response means that the enquiry was saved to the configured database; it is not a quote, order confirmation, stock reservation, or response-time commitment.
 
 The following business-critical parts still require implementation and verification before production:
 

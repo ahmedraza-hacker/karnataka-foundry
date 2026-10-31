@@ -16,7 +16,7 @@ export type Product = {
   isSample?: boolean;
 };
 
-// All entries are illustrative placeholders, not verified Karnataka Foundry products.
+// All entries are illustrative placeholders, not verified Karnatak Foundry products.
 export const products: Product[] = [
   {
     slug: "ac-motor-cooling-fan",

@@ -24,6 +24,6 @@ export function Catalogue({ products, initialCategory }: { products: Product[]; 
       <span className="result-count">{filtered.length} {filtered.length === 1 ? "listing" : "listings"}</span>
     </div>
     {filtered.length > 0 ? <div className="product-grid">{filtered.map((product, index) => <Reveal key={product.slug} delay={Math.min(index, 4) * 60}><ProductCard product={product} index={index} /></Reveal>)}</div> : <div className="empty-state"><span className="eyebrow">No matches</span><h2>Try another search</h2><p>Check the spelling or clear the category filter to see the sample catalogue.</p><button className="button button-outline" onClick={() => { setQuery(""); setCategory("All categories"); }}>Clear filters</button></div>}
-    <p className="catalogue-disclaimer">Product availability, specifications, pricing, and minimum order quantities should be confirmed with Karnataka Foundry.</p>
+    <p className="catalogue-disclaimer">Product availability, specifications, pricing, and minimum order quantities should be confirmed with Karnatak Foundry.</p>
   </>;
 }

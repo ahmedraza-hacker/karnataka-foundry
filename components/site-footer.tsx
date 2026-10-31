@@ -7,14 +7,14 @@ export function SiteFooter() {
         <div className="footer-brand">
           <Link className="brand brand-light" href="/">
             <span className="kf-monogram" aria-hidden="true">KF</span>
-            <span className="brand-copy"><strong>KARNATAKA FOUNDRY</strong><small>ENGINEERED FLOW</small></span>
+            <span className="brand-copy"><strong>KARNATAK FOUNDRY</strong><small>ENGINEERED FLOW</small></span>
           </Link>
           <p>AC motor cooling fans and airflow components for industrial applications and OEM requirements.</p>
         </div>
         <div className="footer-column">
           <h3>Explore</h3>
           <Link href="/products">Products</Link>
-          <Link href="/about">About Karnataka Foundry</Link>
+          <Link href="/about">About Karnatak Foundry</Link>
           <Link href="/quote">Contact and enquiries</Link>
           <Link href="/cart">Enquiry basket</Link>
         </div>
@@ -32,7 +32,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="footer-bottom">
-        <span>© {new Date().getFullYear()} Karnataka Foundry. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} Karnatak Foundry. All rights reserved.</span>
         <span>Catalogue entries are illustrative placeholders pending company verification.</span>
         <div><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></div>
       </div>

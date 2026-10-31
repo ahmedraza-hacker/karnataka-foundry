@@ -68,7 +68,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
             return {
               id: ADMIN_USER_ID,
-              name: "Karnataka Foundry Admin",
+              name: "Karnatak Foundry Admin",
               email: adminEmail,
               accountType: "ADMIN" as const,
             };

@@ -14,10 +14,10 @@ export function SiteHeader() {
   return (
     <header className={`site-header${pathname === "/" ? " site-header-home" : ""}`}>
       <div className="header-inner">
-        <Link className="brand" href="/" aria-label="Karnataka Foundry home">
+        <Link className="brand" href="/" aria-label="Karnatak Foundry home">
           <span className="kf-monogram" aria-hidden="true">KF</span>
           <span className="brand-copy">
-            <strong>KARNATAKA FOUNDRY</strong>
+            <strong>KARNATAK FOUNDRY</strong>
             <small>ENGINEERED FLOW</small>
           </span>
         </Link>

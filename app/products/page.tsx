@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Product Catalogue",
-  description: "Browse sample AC motor cooling fan and industrial component catalogue entries from Karnataka Foundry.",
+  description: "Browse sample AC motor cooling fan and industrial component catalogue entries from Karnatak Foundry.",
 };
 
 export default async function ProductsPage({

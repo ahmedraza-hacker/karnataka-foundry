@@ -7,7 +7,7 @@ export default function CompanyPendingPage() {
         <p className="text-xs font-bold uppercase tracking-[.2em] text-[#a96f48]">Application status</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">Approval is pending</h1>
         <p className="mt-4 text-sm leading-6 text-slate-600">
-          Company applications are reviewed by Karnataka Foundry. Company features remain unavailable until an administrator approves the application.
+          Company applications are reviewed by Karnatak Foundry. Company features remain unavailable until an administrator approves the application.
         </p>
         <p className="mt-3 text-sm leading-6 text-slate-600">
           This confirmation does not indicate whether an account already exists. Once approved, sign in using the registered business email.

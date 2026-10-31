@@ -7,11 +7,11 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Karnataka Foundry | AC Motor Cooling Fan Solutions",
-    template: "%s | Karnataka Foundry",
+    default: "Karnatak Foundry | AC Motor Cooling Fan Solutions",
+    template: "%s | Karnatak Foundry",
   },
   description:
-    "Explore AC motor cooling fan solutions for industrial applications and OEM requirements. Request a technical quotation from Karnataka Foundry.",
+    "Explore AC motor cooling fan solutions for industrial applications and OEM requirements. Request a technical quotation from Karnatak Foundry.",
 };
 
 export default function RootLayout({

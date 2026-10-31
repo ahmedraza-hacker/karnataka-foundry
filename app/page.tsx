@@ -132,7 +132,7 @@ export default async function HomePage() {
       </section>
 
       <section className="premium-contact" id="contact">
-        <span className="premium-eyebrow">KARNATAKA FOUNDRY / ENGINEERED FLOW</span>
+        <span className="premium-eyebrow">KARNATAK FOUNDRY / ENGINEERED FLOW</span>
         <h2>Let’s talk<br />about your <em>application.</em></h2>
         <div className="premium-contact-details">
           <p><span>OWNER</span><strong>Abdul Khadar</strong></p>

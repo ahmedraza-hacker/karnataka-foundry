@@ -16,9 +16,9 @@ import {
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
-  title: "About Karnataka Foundry",
+  title: "About Karnatak Foundry",
   description:
-    "Learn about Karnataka Foundry's industrial product sourcing, supplier coordination, and supply network for AC motor cooling fans and OEM components.",
+    "Learn about Karnatak Foundry's industrial product sourcing, supplier coordination, and supply network for AC motor cooling fans and OEM components.",
 };
 
 const services = [
@@ -134,7 +134,7 @@ export default function AboutPage() {
     <div className="about-page">
       <section className="about-hero" aria-labelledby="about-heading">
         <div className="about-hero-content">
-          <span className="about-eyebrow"><i /> COMPANY PROFILE / KARNATAKA FOUNDRY</span>
+          <span className="about-eyebrow"><i /> COMPANY PROFILE / KARNATAK FOUNDRY</span>
           <h1 id="about-heading">Industrial supply,<br />built on <em>connection.</em></h1>
           <p>
             Connecting businesses with manufacturers and suppliers across AC
@@ -159,7 +159,7 @@ export default function AboutPage() {
           <span className="about-eyebrow">A PRACTICAL INDUSTRIAL PARTNER</span>
           <h2 id="who-heading">We bring product needs<br />and supply networks <em>together.</em></h2>
           <p>
-            Karnataka Foundry is an industrial-focused business working with
+            Karnatak Foundry is an industrial-focused business working with
             AC motor cooling fans, impellers, OEM components, and industrial
             cooling solutions. We aim to connect businesses with suitable
             manufacturers and suppliers through a reliable sourcing and
@@ -255,7 +255,7 @@ export default function AboutPage() {
 
       <section className="about-reasons" aria-labelledby="reasons-heading">
         <div className="about-reasons-copy">
-          <span className="about-eyebrow">WHY KARNATAKA FOUNDRY / 05</span>
+          <span className="about-eyebrow">WHY KARNATAK FOUNDRY / 05</span>
           <h2 id="reasons-heading">Business built<br />around <em>people.</em></h2>
           <p>
             Good sourcing depends on understanding requirements and keeping
@@ -282,7 +282,7 @@ export default function AboutPage() {
           businesses with relevant products, dependable supplier relationships,
           and clear coordination.
         </h2>
-        <span className="about-vision-signature">KARNATAKA FOUNDRY / ENGINEERED FLOW</span>
+        <span className="about-vision-signature">KARNATAK FOUNDRY / ENGINEERED FLOW</span>
       </section>
 
       <section className="about-contact" aria-labelledby="about-contact-heading">
@@ -294,12 +294,12 @@ export default function AboutPage() {
             We’ll help coordinate the next conversation.
           </p>
           <Link className="premium-button premium-button-light" href="/quote">
-            CONTACT KARNATAKA FOUNDRY <ArrowRight size={17} />
+            CONTACT KARNATAK FOUNDRY <ArrowRight size={17} />
           </Link>
         </div>
         <address className="about-contact-card">
           <span className="about-contact-brand">KF</span>
-          <strong>Karnataka Foundry</strong>
+          <strong>Karnatak Foundry</strong>
           <span>Owner · Abdul Khadar</span>
           <a href="mailto:karnatakafoundry@gmail.com">karnatakafoundry@gmail.com</a>
           <a href="tel:9880430017">9880430017</a>
