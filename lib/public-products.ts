@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
 import { isAdminSession } from "@/lib/admin-auth";
@@ -111,7 +112,7 @@ export function filterVisibleProductRecords<T extends ProductVisibilityRecord>(
   );
 }
 
-export async function getVisibleProducts(): Promise<Product[]> {
+export const getVisibleProducts = cache(async function getVisibleProducts(): Promise<Product[]> {
   if (!process.env.DATABASE_URL) {
     return sampleProducts;
   }
@@ -191,4 +192,4 @@ export async function getVisibleProducts(): Promise<Product[]> {
     console.error("Unable to verify product visibility; omitting the catalogue.");
     return [];
   }
-}
+});

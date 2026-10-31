@@ -1,19 +1,40 @@
-import { createHash } from "node:crypto";
+import { createHmac } from "node:crypto";
+import { isIP } from "node:net";
 import { prisma } from "@/lib/prisma";
 
 const REGISTRATION_ATTEMPT_LIMIT = 5;
-const SHARED_REGISTRATION_KEY = createHash("sha256")
-  .update("karnataka-foundry:registration:shared-limit")
-  .digest("hex");
 
-export function registrationRateLimitKey(): string {
-  return SHARED_REGISTRATION_KEY;
+export function getRegistrationRateLimitAddress(
+  headers: Headers,
+  isProduction = process.env.NODE_ENV === "production",
+): string | null {
+  const forwardedAddress = headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+
+  if (forwardedAddress && isIP(forwardedAddress)) return forwardedAddress;
+
+  return isProduction ? null : "local";
 }
 
-export async function isRegistrationRateLimited(): Promise<boolean> {
-  const ipHash = registrationRateLimitKey();
+export function registrationRateLimitKey(
+  clientAddress: string,
+  isProduction = process.env.NODE_ENV === "production",
+): string {
+  const secret = process.env.AUTH_SECRET;
+  if (!secret && isProduction) {
+    throw new Error("AUTH_SECRET must be configured for production registration rate limiting.");
+  }
 
-  await prisma.$executeRaw`
+  return createHmac(
+    "sha256",
+    secret ?? "local-registration-rate-limit-key",
+  )
+    .update(`karnataka-foundry:registration:${clientAddress}`)
+    .digest("hex");
+}
+
+export async function isRegistrationRateLimited(clientAddress: string): Promise<boolean> {
+  const ipHash = registrationRateLimitKey(clientAddress);
+  const [attempt] = await prisma.$queryRaw<{ attempts: number }[]>`
     INSERT INTO "RegistrationRateLimit" ("ipHash", "windowStartedAt", "attempts")
     VALUES (${ipHash}, NOW(), 1)
     ON CONFLICT ("ipHash") DO UPDATE
@@ -28,12 +49,12 @@ export async function isRegistrationRateLimited(): Promise<boolean> {
         THEN 1
         ELSE "RegistrationRateLimit"."attempts" + 1
       END
+    RETURNING "attempts"
   `;
 
-  const attempt = await prisma.registrationRateLimit.findUnique({
-    where: { ipHash: SHARED_REGISTRATION_KEY },
-    select: { attempts: true },
-  });
+  if (!attempt) {
+    throw new Error("Registration rate-limit attempt was not recorded.");
+  }
 
-  return (attempt?.attempts ?? 0) > REGISTRATION_ATTEMPT_LIMIT;
+  return attempt.attempts > REGISTRATION_ATTEMPT_LIMIT;
 }

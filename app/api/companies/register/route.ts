@@ -2,7 +2,10 @@ import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { companyRegistrationSchema } from "@/lib/company-schemas";
-import { isRegistrationRateLimited } from "@/lib/registration-rate-limit";
+import {
+  getRegistrationRateLimitAddress,
+  isRegistrationRateLimited,
+} from "@/lib/registration-rate-limit";
 import { prisma } from "@/lib/prisma";
 
 const genericRegistrationMessage =
@@ -13,8 +16,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Company registration is not configured." }, { status: 503 });
   }
 
+  const clientAddress = getRegistrationRateLimitAddress(request.headers);
+  if (!clientAddress) {
+    return NextResponse.json(
+      { error: "Company registration is temporarily unavailable." },
+      { status: 503 },
+    );
+  }
+
   try {
-    if (await isRegistrationRateLimited()) {
+    if (await isRegistrationRateLimited(clientAddress)) {
       return NextResponse.json(
         { error: "Too many registration attempts. Please try again in an hour." },
         { status: 429 },
